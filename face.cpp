@@ -168,9 +168,10 @@ int main(void)
 			glPolygonMode(GL_FRONT_AND_BACK, (fill = !fill) ? GL_FILL : GL_LINE);
 		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
 		{
-			for (int i = 0; i < 10; ++i)
+			glBindVertexArray(VAO);
+			for (int i = 0; i < 40; ++i)
 			{
-				vertices[rand() % 21] += 0.01f;
+				vertices[rand() % 21] += 0.01f * (rand() % 2 == 0 ? 1 : -1);
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
 				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
