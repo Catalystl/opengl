@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cstdlib>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -133,7 +134,6 @@ int main(void)
 		-0.3f, -0.18f, 0.0f, // Mouth Top Left				//18
 		0.3f, -0.18f, 0.0f, // Mouth Top Right
 		0.0f, -0.3f, 0.0f, // Mouth Bottom
-
     	};
 	unsigned int indices[] =
 	{
@@ -144,7 +144,6 @@ int main(void)
 		12, 13, 14,
 		15, 16, 17,
 		18, 19, 20
-
 	};
 	
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -167,6 +166,19 @@ int main(void)
 			glfwSetWindowShouldClose(window, true);
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 			glPolygonMode(GL_FRONT_AND_BACK, (fill = !fill) ? GL_FILL : GL_LINE);
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		{
+			for (int i = 0; i < 10; ++i)
+			{
+				vertices[rand() % 21] += 0.01f;
+				glBindBuffer(GL_ARRAY_BUFFER, VBO);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+			}
+
+			//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+			//glEnableVertexAttribArray(0);
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
