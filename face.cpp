@@ -18,7 +18,14 @@ const char *fragmentShaderSource =
 "out vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-"	FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
+"	FragColor = vec4(0.0f, 0.0f, 1.0f, 0.2f);\n"
+"}\0";
+const char *fragmentShaderSource2 =
+"#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"	FragColor = vec4(0.4f, 0.0f, 1.0f, 1.0f);\n"
 "}\0";
 
 bool fill = false;
@@ -100,6 +107,17 @@ int main(void)
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
 		return -1;
 	}
+	
+	unsigned int fragmentShader2;
+	fragmentShader2 = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader2, 1, &fragmentShaderSource2, NULL);
+	glCompileShader(fragmentShader2);
+
+	unsigned int shaderProgram2;
+	shaderProgram2 = glCreateProgram();
+	glAttachShader(shaderProgram2, vertexShader);
+	glAttachShader(shaderProgram2, fragmentShader2);
+	glLinkProgram(shaderProgram2);
 
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragmentShader);
@@ -160,16 +178,19 @@ int main(void)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 			glfwSetWindowShouldClose(window, true);
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 			glPolygonMode(GL_FRONT_AND_BACK, (fill = !fill) ? GL_FILL : GL_LINE);
-		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS || true)
 		{
 			glBindVertexArray(VAO);
-			for (int i = 0; i < 40; ++i)
+			for (int i = 0; i < 45; ++i)
 			{
 				vertices[rand() % 21] += 0.01f * (rand() % 2 == 0 ? 1 : -1);
 				glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -183,8 +204,10 @@ int main(void)
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
+		glUseProgram(shaderProgram2);
+		glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
+		glUseProgram(shaderProgram);
 		glDrawElements(GL_TRIANGLES, 21, GL_UNSIGNED_INT, 0);
 
 		glfwSwapBuffers(window);
@@ -195,6 +218,7 @@ int main(void)
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 	glDeleteProgram(shaderProgram);
+	glDeleteProgram(shaderProgram2);
 
 	glfwTerminate();
 	return 0;
